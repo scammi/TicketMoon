@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 # Set up script for the web server,used in both Dockerfiles,
 # while building the Attendize container or installing Attendize in a different environment.

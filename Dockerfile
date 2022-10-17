@@ -9,7 +9,7 @@ WORKDIR /usr/share/nginx/html
 COPY . .
 
 # run composer, chmod files, setup laravel key
-RUN ./scripts/setup
+RUN ./scripts/setup.sh
 
 # The worker container runs the laravel queue in the background
 FROM base as worker
