@@ -268,12 +268,16 @@ class EventCheckoutController extends Controller
         $preference = new MercadoPago\Preference();
         
         // Crea un ítem en la preferencia
-        $item = new MercadoPago\Item();
-        $item->title = 'Mi producto';
-        $item->quantity = 1;
-        $item->unit_price = $order_session['tickets'][0]['full_price'];
-        
-        $preference->items = array($item);
+
+        $items = [];
+        foreach($order_session['tickets'] as $key => $ticket) {
+            $item = new MercadoPago\Item();
+            $item->title = 'Mi producto';
+            $item->quantity = 1;
+            $item->unit_price = $ticket['full_price'];
+            $items[] = $item;
+        }
+        $preference->items = $items;
 
         $preference->save();
         
