@@ -272,6 +272,7 @@ class EventCheckoutController extends Controller
         $item->title = 'Mi producto';
         $item->quantity = 1;
         $item->unit_price = $order_session['tickets'][0]['full_price'];
+        
         $preference->items = array($item);
 
         $preference->save();
@@ -282,7 +283,7 @@ class EventCheckoutController extends Controller
                 'is_embedded'     => $this->is_embedded,
                 'orderService'    => $orderService,
                 'preference_id'   => $preference->id
-                ];
+           ];
 
         if ($this->is_embedded) {
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);

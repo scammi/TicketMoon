@@ -6,7 +6,7 @@
 
 @section('content')
     @include('Public.ViewEvent.Partials.EventHeaderSection')
-
+    <h1><?php echo $preference_id ?></h1>
     @include('Public.ViewEvent.Partials.EventCreateOrderSection')
     <script>var OrderExpires = {{strtotime($expires)}};</script>
     <script>

@@ -217,13 +217,13 @@
                 @endif
                 <h1>{{$tickets[0]['full_price']}}</h1>
                {!! Form::hidden('is_embedded', $is_embedded) !!}
-               <div class="cho-container"></div>
-
+               
                {!! Form::close() !!}
-
+               
             </div>
         </div>
     </div>
+    <div class="cho-container"></div>
     <img src="https://cdn.attendize.com/lg.png" />
         
 </section>
