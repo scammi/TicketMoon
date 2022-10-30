@@ -272,8 +272,8 @@ class EventCheckoutController extends Controller
         $items = [];
         foreach($order_session['tickets'] as $key => $ticket) {
             $item = new MercadoPago\Item();
-            $item->title = 'Mi producto';
-            $item->quantity = 1;
+            $item->title = $ticket['ticket']['title'];
+            $item->quantity = $ticket['qty'];
             $item->unit_price = $ticket['full_price'];
             $items[] = $item;
         }
