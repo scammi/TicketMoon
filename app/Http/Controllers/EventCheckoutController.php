@@ -263,11 +263,24 @@ class EventCheckoutController extends Controller
         $orderService = new OrderService($order_session['order_total'], $order_session['total_booking_fee'], $event);
         $orderService->calculateFinalCosts();
 
+        MercadoPago\SDK::setAccessToken('TEST-8196748728429307-102919-2dee9a46305f3ea0a6cd94a7346894fc-478110956');
+        // Crea un objeto de preferencia
+        $preference = new MercadoPago\Preference();
+        
+        // Crea un ítem en la preferencia
+        $item = new MercadoPago\Item();
+        $item->title = 'Mi producto';
+        $item->quantity = 1;
+        $item->unit_price = 75.56;
+        $preference->items = array($item);
+        $preference->save();
+        
         $data = $order_session + [
                 'event'           => $event,
                 'secondsToExpire' => $secondsToExpire,
                 'is_embedded'     => $this->is_embedded,
-                'orderService'    => $orderService
+                'orderService'    => $orderService,
+                'preference_id'   => $preference->id
                 ];
 
         if ($this->is_embedded) {
@@ -365,19 +378,6 @@ class EventCheckoutController extends Controller
 
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
         
-        MercadoPago\SDK::setAccessToken('TEST-8196748728429307-102919-2dee9a46305f3ea0a6cd94a7346894fc-478110956');
-        // Crea un objeto de preferencia
-        $preference = new MercadoPago\Preference();
-        
-        // Crea un ítem en la preferencia
-        $item = new MercadoPago\Item();
-        $item->title = 'Mi producto';
-        $item->quantity = 1;
-        $item->unit_price = 75.56;
-        $preference->items = array($item);
-        $preference->save();
-        
-        
         $viewData = ['event' => $event,
                         'tickets' => $order_session['tickets'],
                         'order_total' => $order_total,
@@ -387,7 +387,6 @@ class EventCheckoutController extends Controller
                         'payment_gateway' => $payment_gateway,
                         'secondsToExpire' => $secondsToExpire,
                         'payment_failed' => $payment_failed,
-                        'preference_id' => $preference->id
         ];
         return view('Public.ViewEvent.EventPagePayment', $viewData);
     }

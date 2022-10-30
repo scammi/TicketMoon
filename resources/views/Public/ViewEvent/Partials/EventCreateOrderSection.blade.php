@@ -1,3 +1,4 @@
+<script src="https://sdk.mercadopago.com/js/v2"></script>
 <section id='order_form' class="container">
     <div class="row">
         <h1 class="section_head">
@@ -216,14 +217,31 @@
                 @endif
 
                {!! Form::hidden('is_embedded', $is_embedded) !!}
-               {!! Form::submit(trans("Public_ViewEvent.checkout_order"), ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
+               <div class="cho-container"></div>
+
                {!! Form::close() !!}
 
             </div>
         </div>
     </div>
     <img src="https://cdn.attendize.com/lg.png" />
+        
 </section>
+<script>
+  const mp = new MercadoPago('TEST-8fc21640-da5b-4459-9148-9372b86755b3', {
+    locale: 'es-AR'
+  });
+
+  mp.checkout({
+    preference: {
+      id: '<?php echo $preference_id ?>'
+    },
+    render: {
+      container: '.cho-container',
+      label: 'Pagar',
+    }
+  });
+</script>
 @if(session()->get('message'))
     <script>showMessage('{{session()->get('message')}}');</script>
 @endif
