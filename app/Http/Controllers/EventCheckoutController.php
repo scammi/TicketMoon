@@ -271,8 +271,9 @@ class EventCheckoutController extends Controller
         $item = new MercadoPago\Item();
         $item->title = 'Mi producto';
         $item->quantity = 1;
-        $item->unit_price = 75.56;
+        $item->unit_price = $order_session['tickets'][0]['full_price'];
         $preference->items = array($item);
+
         $preference->save();
         
         $data = $order_session + [

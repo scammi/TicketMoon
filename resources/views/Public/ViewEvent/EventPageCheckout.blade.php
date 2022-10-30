@@ -16,7 +16,7 @@
 
         mp.checkout({
             preference: {
-            id: {{strtotime($preference_id)}}
+            id: '<?php echo $preference_id ?>'
             },
             render: {
             container: '.cho-container',
