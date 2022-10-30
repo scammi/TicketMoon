@@ -30,6 +30,7 @@
         "league/omnipay": "^3.0",
         "maatwebsite/excel": "^3.1",
         "mcamara/laravel-localization": "^1.4",
+        "mercadopago/dx-php": "^2.5",
         "mews/purifier": "^3.1",
         "milon/barcode": "^6.0",
         "nitmedia/wkhtml2pdf": "dev-master",
