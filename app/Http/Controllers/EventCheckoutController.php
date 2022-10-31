@@ -263,32 +263,38 @@ class EventCheckoutController extends Controller
         $orderService = new OrderService($order_session['order_total'], $order_session['total_booking_fee'], $event);
         $orderService->calculateFinalCosts();
 
-        MercadoPago\SDK::setAccessToken('TEST-8196748728429307-102919-2dee9a46305f3ea0a6cd94a7346894fc-478110956');
-        // Crea un objeto de preferencia
-        $preference = new MercadoPago\Preference();
+        // MercadoPago\SDK::setAccessToken('TEST-8196748728429307-102919-2dee9a46305f3ea0a6cd94a7346894fc-478110956');
+        // // Crea un objeto de preferencia
+        // $preference = new MercadoPago\Preference();
         
-        // Crea un ítem en la preferencia
+        // // Crea un ítem en la preferencia
 
-        $items = [];
-        foreach($order_session['tickets'] as $key => $ticket) {
-            $item = new MercadoPago\Item();
-            $item->title = $ticket['ticket']['title'];
-            $item->quantity = $ticket['qty'];
-            $item->unit_price = $ticket['full_price'];
-            $items[] = $item;
-        }
-        $preference->items = $items;
-
-        $preference->save();
+        // $items = [];
+        // foreach($order_session['tickets'] as $key => $ticket) {
+        //     $item = new MercadoPago\Item();
+        //     $item->title = $ticket['ticket']['title'];
+        //     $item->quantity = $ticket['qty'];
+        //     $item->unit_price = $ticket['full_price'];
+        //     $items[] = $item;
+        // }
+        // $preference->items = $items;
+        // $preference->back_urls = array(
+        //     "success" => "https://localhost:8081/e/{$event_id}/checkout/success",
+        //     // "failure" => "http://localhost:8080/feedback", 
+        //     // "pending" => "http://localhost:8080/feedback"
+        // );
+        // $preference->auto_return = "approved";
+        // $preference->save();
         
         $data = $order_session + [
                 'event'           => $event,
                 'secondsToExpire' => $secondsToExpire,
                 'is_embedded'     => $this->is_embedded,
                 'orderService'    => $orderService,
-                'preference_id'   => $preference->id
+                // 'preference_id'   => $preference->id,
+                // 'preference_link' => $preference->init_point
            ];
-
+        
         if ($this->is_embedded) {
             return view('Public.ViewEvent.Embedded.EventPageCheckout', $data);
         }
@@ -372,28 +378,55 @@ class EventCheckoutController extends Controller
         // Credit card page payment
         $order_session = session()->get('ticket_order_' . $event_id);
         $event = Event::findOrFail($event_id);
-
+        
         $payment_gateway = $order_session['payment_gateway'];
         $order_total = $order_session['order_total'];
         $account_payment_gateway = $order_session['account_payment_gateway'];
-
+        
         $orderService = new OrderService($order_session['order_total'], $order_session['total_booking_fee'], $event);
         $orderService->calculateFinalCosts();
-
+        
         $payment_failed = $request->get('is_payment_failed') ? 1 : 0;
-
+        
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
         
+        MercadoPago\SDK::setAccessToken('TEST-8196748728429307-102919-2dee9a46305f3ea0a6cd94a7346894fc-478110956');
+
+        // // Crea un objeto de preferencia
+        $preference = new MercadoPago\Preference();
+        
+        // // Crea un ítem en la preferencia
+
+        $items = [];
+        foreach($order_session['tickets'] as $key => $ticket) {
+            $item = new MercadoPago\Item();
+            $item->title = $ticket['ticket']['title'];
+            $item->quantity = $ticket['qty'];
+            $item->unit_price = $ticket['full_price'];
+            $items[] = $item;
+        }
+        $preference->items = $items;
+        $preference->back_urls = array(
+            "success" => "https://localhost:8081/e/{$event_id}/checkout/success",
+            // "failure" => "http://localhost:8080/feedback", 
+            // "pending" => "http://localhost:8080/feedback"
+        );
+        $preference->auto_return = "approved";
+        $preference->save();
+
         $viewData = ['event' => $event,
-                        'tickets' => $order_session['tickets'],
-                        'order_total' => $order_total,
-                        'orderService' => $orderService,
-                        'order_requires_payment'  => PaymentUtils::requiresPayment($order_total),
-                        'account_payment_gateway' => $account_payment_gateway,
-                        'payment_gateway' => $payment_gateway,
-                        'secondsToExpire' => $secondsToExpire,
-                        'payment_failed' => $payment_failed,
+            'tickets' => $order_session['tickets'],
+            'order_total' => $order_total,
+            'orderService' => $orderService,
+            'order_requires_payment'  => PaymentUtils::requiresPayment($order_total),
+            'account_payment_gateway' => $account_payment_gateway,
+            'payment_gateway' => $payment_gateway,
+            'secondsToExpire' => $secondsToExpire,
+            'payment_failed' => $payment_failed,
+            'preference_id' => $preference->id,
+            'preference_init_point' => $preference->init_point,
         ];
+
         return view('Public.ViewEvent.EventPagePayment', $viewData);
     }
 
@@ -408,25 +441,8 @@ class EventCheckoutController extends Controller
      */
     public function postCreateOrder(Request $request, $event_id)
     {
-        $request_data = $ticket_order = session()->get('ticket_order_' . $event_id . ".request_data",[0 => []]);
-        $request_data = array_merge($request_data[0], $request->except(['cardnumber', 'cvc']));
 
-        session()->remove('ticket_order_' . $event_id . '.request_data');
-        session()->push('ticket_order_' . $event_id . '.request_data', $request_data);
-
-        $ticket_order = session()->get('ticket_order_' . $event_id);
-
-        $event = Event::findOrFail($event_id);
-
-        $order_requires_payment = $ticket_order['order_requires_payment'];
-
-        if ($order_requires_payment && $request->get('pay_offline') && $event->enable_offline_payments) {
-            return $this->completeOrder($event_id);
-        }
-
-        if (!$order_requires_payment) {
-            return $this->completeOrder($event_id);
-        }
+        return $this->completeOrder($event_id);
 
         try {
 
@@ -521,14 +537,15 @@ class EventCheckoutController extends Controller
         $payment_gateway_config = $ticket_order['account_payment_gateway']->config + [
                 'testMode' => config('attendize.enable_test_payments')];
 
-        $payment_gateway_factory = new PaymentGatewayFactory();
-        $gateway = $payment_gateway_factory->create($ticket_order['payment_gateway']->name, $payment_gateway_config);
-        $gateway->extractRequestParameters($request);
-        $response = $gateway->completeTransaction($ticket_order['transaction_data'][0]);
+        // $payment_gateway_factory = new PaymentGatewayFactory();
+        // $gateway = $payment_gateway_factory->create($ticket_order['payment_gateway']->name, $payment_gateway_config);
+        // $gateway->extractRequestParameters($request);
+        // $response = $gateway->completeTransaction($ticket_order['transaction_data'][0]);
 
+        if (true) {
+            // session()->push('ticket_order_' . $event_id . '.transaction_id', $response->getTransactionReference());
 
-        if ($response->isSuccessful()) {
-            session()->push('ticket_order_' . $event_id . '.transaction_id', $response->getTransactionReference());
+            session()->push('ticket_order_' . $event_id . '.transaction_id', '1309414625');
             return $this->completeOrder($event_id, false);
         } else {
             session()->flash('message', $response->getMessage());
@@ -556,7 +573,10 @@ class EventCheckoutController extends Controller
             $order = new Order();
             $ticket_order = session()->get('ticket_order_' . $event_id);
 
+            // return $ticket_order;
+
             $request_data = $ticket_order['request_data'][0];
+
             $event = Event::findOrFail($ticket_order['event_id']);
             $attendee_increment = 1;
             $ticket_questions = isset($request_data['ticket_holder_questions']) ? $request_data['ticket_holder_questions'] : [];

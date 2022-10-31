@@ -1,4 +1,3 @@
-<script src="https://sdk.mercadopago.com/js/v2"></script>
 <section id='order_form' class="container">
     <div class="row">
         <h1 class="section_head">
@@ -215,19 +214,16 @@
                     {!! nl2br(e($event->pre_order_display_message)) !!}
                 </div>
                 @endif
-                <h1>{{$tickets[0]['full_price']}}</h1>
+
                {!! Form::hidden('is_embedded', $is_embedded) !!}
-               
+               {!! Form::submit(trans("Public_ViewEvent.checkout_order"), ['class' => 'btn btn-lg btn-success card-submit', 'style' => 'width:100%;']) !!}
                {!! Form::close() !!}
-               
+
             </div>
         </div>
     </div>
-    <div class="cho-container"></div>
     <img src="https://cdn.attendize.com/lg.png" />
-        
 </section>
-
 @if(session()->get('message'))
     <script>showMessage('{{session()->get('message')}}');</script>
 @endif

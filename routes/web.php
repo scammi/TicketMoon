@@ -187,6 +187,10 @@ Route::group(
         Route::post('{event_id}/checkout/create',
             [EventCheckoutController::class, 'postCreateOrder']
         )->name('postCreateOrder');
+        
+        Route::get('{event_id}/checkout/complete',
+            [EventCheckoutController::class, 'postCreateOrder']
+        )->name('completeOrder');
     });
 
     /*
