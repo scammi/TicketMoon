@@ -390,7 +390,7 @@ class EventCheckoutController extends Controller
         
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
         
-        MercadoPago\SDK::setAccessToken('TEST-8196748728429307-102919-2dee9a46305f3ea0a6cd94a7346894fc-478110956');
+        MercadoPago\SDK::setAccessToken('MERCADO_PAGO_PRIVATE_KEY');
 
         // // Crea un objeto de preferencia
         $preference = new MercadoPago\Preference();
@@ -406,9 +406,10 @@ class EventCheckoutController extends Controller
             $items[] = $item;
         }
         $preference->items = $items;
+
         $preference->back_urls = array(
             "success" => "https://localhost:8081/e/{$event_id}/checkout/success",
-            // "failure" => "http://localhost:8080/feedback", 
+            "failure" => "https://www.google.com/", 
             // "pending" => "http://localhost:8080/feedback"
         );
         $preference->auto_return = "approved";
@@ -427,6 +428,7 @@ class EventCheckoutController extends Controller
             'preference_init_point' => $preference->init_point,
         ];
 
+        // print_r($viewData);
         return view('Public.ViewEvent.EventPagePayment', $viewData);
     }
 
