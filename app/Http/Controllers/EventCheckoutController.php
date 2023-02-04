@@ -534,8 +534,8 @@ class EventCheckoutController extends Controller
 
         $ticket_order = session()->get('ticket_order_' . $event_id);
 
-        $payment_gateway_config = $ticket_order['account_payment_gateway']->config + [
-                'testMode' => config('attendize.enable_test_payments')];
+        // $payment_gateway_config = $ticket_order['account_payment_gateway']->config + [
+        //         'testMode' => config('attendize.enable_test_payments')];
 
         // $payment_gateway_factory = new PaymentGatewayFactory();
         // $gateway = $payment_gateway_factory->create($ticket_order['payment_gateway']->name, $payment_gateway_config);

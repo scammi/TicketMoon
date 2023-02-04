@@ -63,17 +63,23 @@ class EventViewController extends Controller
          */
         if ($affiliate_ref = $request->get('ref')) {
             $affiliate_ref = preg_replace("/\W|_/", '', $affiliate_ref);
-
+            
             if ($affiliate_ref) {
                 $affiliate = Affiliate::firstOrNew([
                     'name'       => $request->get('ref'),
                     'event_id'   => $event_id,
                     'account_id' => $event->account_id,
                 ]);
-
+                
                 ++$affiliate->visits;
-
-                $affiliate->save();
+                try {
+                    // print_r($affiliate);
+                    // return;
+                    $affiliate->save();
+                } catch (\Exception $e) {
+                    // Do nothing
+                    return $e;
+                }  
 
                 Cookie::queue('affiliate_' . $event_id, $affiliate_ref, 60 * 24 * 60);
             }
