@@ -72,6 +72,8 @@ class EventViewController extends Controller
                 ]);
                 
                 ++$affiliate->visits;
+                $affiliate->last_visit = date('Y-m-d H:i:s');
+
                 try {
                     $affiliate->save();
                 } catch (\Exception $e) {

@@ -39,6 +39,5 @@ class Affiliate extends \Illuminate\Database\Eloquent\Model
      */
     protected $attributes = [
         'tickets_sold' => '0',
-        'last_visit' => '2009-10-16 21:30:45',
     ];
 }
