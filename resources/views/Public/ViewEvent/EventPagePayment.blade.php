@@ -1,7 +1,7 @@
 <script src="https://sdk.mercadopago.com/js/v2"></script>
 <script>
 // Initialize the checkout
-const mp = new MercadoPago('MERCADO_PAGO_PUBLIC_KEY', { // Replace with key
+const mp = new MercadoPago('<?php echo $mercado_pago_public_key ?>', { // Replace with key
     locale: 'en-US'
   });
 

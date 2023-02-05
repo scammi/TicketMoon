@@ -390,13 +390,12 @@ class EventCheckoutController extends Controller
         
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
         
-        MercadoPago\SDK::setAccessToken('MERCADO_PAGO_PRIVATE_KEY');
+        MercadoPago\SDK::setAccessToken(config('app.mercado_pago_private_key'));
 
-        // // Crea un objeto de preferencia
+        // Crea un objeto de preferencia
         $preference = new MercadoPago\Preference();
         
-        // // Crea un ítem en la preferencia
-
+        // Crea un ítem en la preferencia
         $items = [];
         foreach($order_session['tickets'] as $key => $ticket) {
             $item = new MercadoPago\Item();
@@ -425,6 +424,7 @@ class EventCheckoutController extends Controller
             'secondsToExpire' => $secondsToExpire,
             'payment_failed' => $payment_failed,
             'preference_id' => $preference->id,
+            'mercado_pago_public_key' => config('app.mercado_pago_public_key'),
             'preference_init_point' => $preference->init_point,
         ];
 
