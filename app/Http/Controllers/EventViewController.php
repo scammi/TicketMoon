@@ -73,11 +73,8 @@ class EventViewController extends Controller
                 
                 ++$affiliate->visits;
                 try {
-                    // print_r($affiliate);
-                    // return;
                     $affiliate->save();
                 } catch (\Exception $e) {
-                    // Do nothing
                     return $e;
                 }  
 
