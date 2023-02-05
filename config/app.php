@@ -251,4 +251,13 @@ return [
         'Excel'        => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    |   Mercado Pago 
+    |--------------------------------------------------------------------------
+    |
+    */
+    'mercado_pago_public_key' => env('MERCADO_PAGO_PUBLIC_KEY', ''),
+    'mercado_pago_private_key' => env('MERCADO_PAGO_PRIVATE_KEY', ''),
 ];
